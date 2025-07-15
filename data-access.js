@@ -25,7 +25,7 @@ async function getCustomers() {
 async function getCustomerById(id) {
     try {
         const customer = await collection.findOne({"id": +id});
-        // return array [customer, errMessage]
+        // return array [customer, errMessage] //
         if(!customer){
           return [ null, "invalid customer number"];
         }
