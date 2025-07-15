@@ -22,6 +22,20 @@ async function getCustomers() {
     }
 }
 
+async function getCustomerById(id) {
+    try {
+        const customer = await collection.findOne({"id": +id});
+        // return array [customer, errMessage]
+        if(!customer){
+          return [ null, "invalid customer number"];
+        }
+        return [customer, null];
+    } catch (err) {
+        console.log(err.message);
+        return [null, err.message];
+    }
+}
+
 async function addCustomer(newCustomer) {
     try {
         const insertResult = await collection.insertOne(newCustomer);
@@ -51,4 +65,10 @@ async function resetCustomers() {
 }
 
 dbStartup();
-module.exports = { getCustomers, resetCustomers, addCustomer };
+module.exports = {
+  getCustomers,
+  resetCustomers,
+  addCustomer,
+  getCustomerById
+};
+
