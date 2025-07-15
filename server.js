@@ -67,3 +67,22 @@ app.post('/customers', async (req, res) => {
         }
     }
 });
+
+app.put('/customers/:id', async (req, res) => {
+    const id = req.params.id;
+    const updatedCustomer = req.body;
+
+    if (!updatedCustomer || Object.keys(updatedCustomer).length === 0) {
+        res.status(400).send("missing request body");
+        return;
+    }
+
+    delete updatedCustomer._id;
+
+    const [message, errMessage] = await da.updateCustomer(updatedCustomer);
+    if (message) {
+        res.send(message);
+    } else {
+        res.status(400).send(errMessage);
+    }
+});
