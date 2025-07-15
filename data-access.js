@@ -22,20 +22,6 @@ async function getCustomers() {
     }
 }
 
-async function getCustomerById(id) {
-    try {
-        const customer = await collection.findOne({"id": +id});
-        // return array [customer, errMessage] //
-        if(!customer){
-          return [ null, "invalid customer number"];
-        }
-        return [customer, null];
-    } catch (err) {
-        console.log(err.message);
-        return [null, err.message];
-    }
-}
-
 async function addCustomer(newCustomer) {
     try {
         const insertResult = await collection.insertOne(newCustomer);
@@ -46,7 +32,6 @@ async function addCustomer(newCustomer) {
         return ["fail", null, err.message];
     }
 }
-
 
 async function resetCustomers() {
     let data = [{ "id": 0, "name": "Mary Jackson", "email": "maryj@abc.com", "password": "maryj" },
@@ -65,38 +50,5 @@ async function resetCustomers() {
     }
 }
 
-async function updateCustomer(updatedCustomer) {
-    try {
-        const filter = { "id": updatedCustomer.id };
-        const setData = { $set: updatedCustomer };
-        const updateResult = 
-        await collection.updateOne(filter, setData);
-        // return array [message, errMessage]
-        return ["one record updated", null];
-    } catch (err) {
-        console.log(err.message);
-        return [ null, err.message];
-    }
-}
-
-async function deleteCustomerById(id) {
-    try {
-        const deleteResult = await collection.deleteOne({ "id": +id });
-        if (deleteResult.deletedCount === 0) {
-            // return array [message, errMessage]
-            return [null, "no record deleted"];
-        } else if (deleteResult.deletedCount === 1) {
-            return ["one record deleted", null];
-        } else {
-            return [null, "error deleting records"]
-        }
-    } catch (err) {
-        console.log(err.message);
-        return [null, err.message];
-    }
-}
-
-
 dbStartup();
-module.exports = { getCustomers, resetCustomers, addCustomer, 
-  getCustomerById, updateCustomer, deleteCustomerById };
+module.exports = { getCustomers, resetCustomers, addCustomer };
