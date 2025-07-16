@@ -19,6 +19,54 @@ app.listen(port, () => {
   console.log("staticDir: " + staticDir);
 });
 
+app.get("/customers/find", apiKeyAuth, async (req, res) => {
+  const allowedFields = ['id', 'email', 'password'];
+  const queryKeys = Object.keys(req.query);
+
+  // 2. Require a query string
+  if (queryKeys.length === 0) {
+    return res.status(400).send("query string is required");
+  }
+
+  // 3. Only allow one key=value pair
+  if (queryKeys.length > 1) {
+    return res.status(400).send("only one name/value pair is allowed");
+  }
+
+  const field = queryKeys[0];
+  const value = req.query[field];
+
+  // 5. Validate field name
+  if (!allowedFields.includes(field)) {
+    return res.status(400).send("name must be one of the following (id, email, password)");
+  }
+
+  // 6. Build filter
+  const filter = {};
+  if (field === "id") {
+    const num = Number(value);
+    if (isNaN(num)) {
+      return res.status(400).send("id must be a number");
+    }
+    filter.id = num;
+  } else {
+    filter[field] = value;
+  }
+
+  // ✅ 7. Use correct data-access function
+  const [results, err] = await da.getCustomersByFilter(filter);
+
+  if (results && results.length === 0) {
+    return res.status(404).send("no matching customer documents found");
+  }
+
+  if (results) {
+    res.send(results);
+  } else {
+    res.status(500).send(err);
+  }
+});
+
 // ✅ GET all customers (protected)
 app.get("/customers", apiKeyAuth, async (req, res) => {
   const [cust, err] = await da.getCustomers();
@@ -93,5 +141,53 @@ app.delete("/customers/:id", apiKeyAuth, async (req, res) => {
     res.send(message);
   } else {
     res.status(404).send(errMessage);
+  }
+});
+
+app.get("/customers/find", apiKeyAuth, async (req, res) => {
+  const allowedFields = ['id', 'email', 'password'];
+  const queryKeys = Object.keys(req.query);
+
+  // 2. Require a query string
+  if (queryKeys.length === 0) {
+    return res.status(400).send("query string is required");
+  }
+
+  // 3. Only allow one key=value pair
+  if (queryKeys.length > 1) {
+    return res.status(400).send("only one name/value pair is allowed");
+  }
+
+  const field = queryKeys[0];
+  const value = req.query[field];
+
+  // 5. Validate field name
+  if (!allowedFields.includes(field)) {
+    return res.status(400).send("name must be one of the following (id, email, password)");
+  }
+
+  // 6. Build filter
+  const filter = {};
+  if (field === "id") {
+    const num = Number(value);
+    if (isNaN(num)) {
+      return res.status(400).send("id must be a number");
+    }
+    filter.id = num;
+  } else {
+    filter[field] = value;
+  }
+
+  // ✅ 7. Use correct data-access function
+  const [results, err] = await da.getCustomersByFilter(filter);
+
+  if (results && results.length === 0) {
+    return res.status(404).send("no matching customer documents found");
+  }
+
+  if (results) {
+    res.send(results);
+  } else {
+    res.status(500).send(err);
   }
 });

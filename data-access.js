@@ -95,9 +95,25 @@ async function deleteCustomerById(id) {
     }
 }
 
+async function getCustomersByFilter(filter) {
+  try {
+    // If filtering by id, convert the value to a number
+    if (filter.id) {
+      filter.id = +filter.id;
+    }
+
+    const customers = await collection.find(filter).toArray();
+    return [customers, null];
+  } catch (err) {
+    return [null, err.message];
+  }
+}
+
+
+
 
 dbStartup();
 
 module.exports = { getCustomers, resetCustomers, addCustomer,
- getCustomerById, updateCustomer, deleteCustomerById };
+ getCustomerById, updateCustomer, deleteCustomerById, getCustomersByFilter};
 
