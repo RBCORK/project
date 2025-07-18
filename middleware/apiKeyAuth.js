@@ -1,9 +1,6 @@
 function apiKeyAuth(req, res, next) {
-  const apiKey = req.header('x-api-key');
+  const apiKey = req.header('x-api-key') || req.query.apikey;
   const expectedKey = process.env.API_KEY;
-
-  console.log("🔐 Received API Key:", apiKey);
-  console.log("🔐 Expected API Key:", expectedKey);
 
   if (!apiKey) {
     return res.status(401).send("API Key is missing");
@@ -13,7 +10,6 @@ function apiKeyAuth(req, res, next) {
     return res.status(403).send("API Key is invalid");
   }
 
-  console.log("✅ API Key matched");
   next();
 }
 

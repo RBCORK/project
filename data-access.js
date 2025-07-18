@@ -97,8 +97,15 @@ async function deleteCustomerById(id) {
 
 async function getCustomersByFilter(filter) {
   try {
-    // If filtering by id, convert the value to a number
-    if (filter.id) {
+    // Recursively cast id values to numbers inside $or, if present
+    if (filter.$or) {
+      filter.$or = filter.$or.map(cond => {
+        if (cond.id !== undefined) {
+          return { id: +cond.id };
+        }
+        return cond;
+      });
+    } else if (filter.id !== undefined) {
       filter.id = +filter.id;
     }
 
@@ -108,9 +115,6 @@ async function getCustomersByFilter(filter) {
     return [null, err.message];
   }
 }
-
-
-
 
 dbStartup();
 
